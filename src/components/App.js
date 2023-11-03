@@ -1,4 +1,6 @@
 import { Component } from 'react';
+import { Statistics } from './Statistics/Statistics';
+import { FeedbackOptions } from './FeedbackOptions/FeedbackOptions';
 
 export class App extends Component {
   state = {
@@ -7,44 +9,41 @@ export class App extends Component {
     bad: 0,
   };
 
-  countGoodFeedback = () => {
+  countFeedback = option => {
     this.setState(prevState => {
       return {
-        good: prevState.good + 1,
+        [option]: prevState[option] + 1,
       };
     });
   };
 
-  countBadFeedback = () => {
-    this.setState(prevState => {
-      return {
-        bad: prevState.bad + 1,
-      };
-    });
+  countTotalFeedback = () => {
+    const { good, neutral, bad } = this.state;
+    const total = good + neutral + bad;
+    return total;
   };
 
-  countNeutralFeedback = () => {
-    this.setState(prevState => {
-      return {
-        neutral: prevState.neutral + 1,
-      };
-    });
+  countPositiveFeedbackPercentage = () => {
+    const { good, neutral, bad } = this.state;
+    const goodPercentage = Math.round((good / (good + neutral + bad)) * 100);
+    return goodPercentage;
   };
-  // countPositiveFeedbackPercentage()
 
   render() {
     return (
       <div>
         <h1>Please leave feedback</h1>
-        <button onClick={this.countGoodFeedback}>good</button>
-        <button onClick={this.countNeutralFeedback}>neutral</button>
-        <button onClick={this.countBadFeedback}>bad</button>
-        <h2>Statistics</h2>
-        <span>Good: {this.state.good}</span>
-        <span>Neutral: {this.state.neutral}</span>
-        <span>Bad: {this.state.bad}</span>
-        <span>Total:</span>
-        <span>Percentage: %</span>
+        <FeedbackOptions
+          options={['good', 'neutral', 'bad']}
+          onLeaveFeedback={this.countFeedback}
+        />
+        <Statistics
+          good={this.state.good}
+          neutral={this.state.neutral}
+          bad={this.state.bad}
+          total={this.countTotalFeedback()}
+          positivePercentage={this.countPositiveFeedbackPercentage()}
+        />
       </div>
     );
   }
